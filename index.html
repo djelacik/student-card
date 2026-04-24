@@ -537,7 +537,7 @@
             margin-bottom: 20px;
         }
 
-        .qr-sheet canvas {
+        .qr-sheet canvas, .qr-sheet img {
             border-radius: 12px;
             max-width: 220px;
         }
@@ -666,9 +666,7 @@
 <!-- QR Modal -->
 <div class="qr-modal-overlay" id="qrModal" onclick="closeQr(event)">
     <div class="qr-sheet">
-        <h3>🎓 Verify Student</h3>
-        <p>Kanye West — Wolves 🐺</p>
-        <canvas id="qrCanvas"></canvas>
+        <div id="qrCanvas" style="display:inline-block;"></div>
         <button class="qr-close-btn" onclick="closeQrModal()">Sulje</button>
     </div>
 </div>
@@ -763,12 +761,15 @@
     function verifyCard() {
         document.getElementById('qrModal').classList.add('active');
         if (!qrGenerated) {
-            QRCode.toCanvas(
-                document.getElementById('qrCanvas'),
-                'https://open.spotify.com/track/432hUIl3ISDeytYW5XBQ5h?si=61fc172d6cc149d2',
-                { width: 220, margin: 2, color: { dark: '#1a1a1a', light: '#ffffff' } },
-                function() { qrGenerated = true; }
-            );
+            new QRCode(document.getElementById('qrCanvas'), {
+                text: 'https://open.spotify.com/track/432hUIl3ISDeytYW5XBQ5h?si=61fc172d6cc149d2',
+                width: 220,
+                height: 220,
+                colorDark: '#1a1a1a',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            qrGenerated = true;
         }
     }
 
@@ -780,7 +781,7 @@
         if (e.target === document.getElementById('qrModal')) closeQrModal();
     }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 </body>
 </html>
