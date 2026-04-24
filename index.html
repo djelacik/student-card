@@ -14,13 +14,13 @@
     <link rel="manifest" href="manifest.json">
 
     <!-- Open Graph (link preview) -->
-    <meta property="og:title" content="🎓 Opiskelijan Student Card">
-    <meta property="og:description" content="From Daniel to people 🔥 100% aito opiskelija (luota mulle bro). Täysin legit, no cap fr fr on God 😤">
+    <meta property="og:title" content="Student Card">
+    <meta property="og:description" content="Jotkut tekee ja toiset haluu tehä">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://djelacik.github.io/student-card/">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="🎓 Opiskelijan Student Card">
-    <meta name="twitter:description" content="From Daniel to people 🔥 100% aito opiskelija (luota mulle bro). Täysin legit, no cap fr fr on God 😤">
+    <meta name="twitter:title" content="Student Card">
+    <meta name="twitter:description" content="Jotkut tekee ja toiset haluu tehä">
     <style>
         * {
             margin: 0;
@@ -44,77 +44,6 @@
             background: #fff;
             position: relative;
             overflow: hidden;
-        }
-
-        /* Status bar */
-        .status-bar {
-            background: linear-gradient(135deg, #4a6cf7, #6b7dda);
-            padding: 12px 20px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #fff;
-            font-weight: 700;
-            font-size: 15px;
-            height: 50px;
-        }
-
-        .status-bar-left { font-weight: 700; }
-
-        .status-bar-right {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .signal-bars {
-            display: flex;
-            gap: 1.5px;
-            align-items: flex-end;
-            height: 12px;
-        }
-
-        .signal-bar {
-            width: 3px;
-            background: #fff;
-            border-radius: 1px;
-        }
-
-        .signal-bar:nth-child(1) { height: 4px; }
-        .signal-bar:nth-child(2) { height: 6px; }
-        .signal-bar:nth-child(3) { height: 9px; }
-        .signal-bar:nth-child(4) { height: 12px; }
-
-        .battery {
-            width: 24px;
-            height: 11px;
-            border: 1.5px solid #fff;
-            border-radius: 2px;
-            position: relative;
-            margin-left: 2px;
-        }
-
-        .battery::after {
-            content: '';
-            position: absolute;
-            right: -4px;
-            top: 2px;
-            width: 2px;
-            height: 5px;
-            background: #fff;
-            border-radius: 0 1px 1px 0;
-        }
-
-        .battery-fill {
-            position: absolute;
-            left: 1px;
-            top: 1px;
-            bottom: 1px;
-            width: 60%;
-            background: #f5c518;
-            border-radius: 1px;
         }
 
         /* Header */
@@ -628,23 +557,6 @@
 <body>
 
 <div class="phone-frame">
-    <!-- Status Bar -->
-    <div class="status-bar">
-        <div class="status-bar-left" id="clock">13.16</div>
-        <div class="status-bar-right">
-            <div class="signal-bars">
-                <div class="signal-bar"></div>
-                <div class="signal-bar"></div>
-                <div class="signal-bar"></div>
-                <div class="signal-bar"></div>
-            </div>
-            <span>4G</span>
-            <div class="battery">
-                <div class="battery-fill"></div>
-            </div>
-        </div>
-    </div>
-
     <!-- Header -->
     <div class="header">
         <div class="header-pill">Student Card</div>
@@ -797,16 +709,6 @@
 
     // Set student number on load
     document.getElementById('studentNumber').textContent = generateStudentNumber();
-
-    // Update clock
-    function updateClock() {
-        const now = new Date();
-        const h = now.getHours();
-        const m = now.getMinutes().toString().padStart(2, '0');
-        document.getElementById('clock').textContent = h + '.' + m;
-    }
-    updateClock();
-    setInterval(updateClock, 10000);
 
     // Handle photo upload
     function handlePhoto(input) {
