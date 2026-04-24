@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Student Card</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .phone-frame {
+            width: 100%;
+            max-width: 420px;
+            min-height: 100vh;
+            background: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Status bar */
+        .status-bar {
+            background: linear-gradient(135deg, #4a6cf7, #6b7dda);
+            padding: 12px 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 15px;
+            height: 50px;
+        }
+
+        .status-bar-left { font-weight: 700; }
+
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .signal-bars {
+            display: flex;
+            gap: 1.5px;
+            align-items: flex-end;
+            height: 12px;
+        }
+
+        .signal-bar {
+            width: 3px;
+            background: #fff;
+            border-radius: 1px;
+        }
+
+        .signal-bar:nth-child(1) { height: 4px; }
+        .signal-bar:nth-child(2) { height: 6px; }
+        .signal-bar:nth-child(3) { height: 9px; }
+        .signal-bar:nth-child(4) { height: 12px; }
+
+        .battery {
+            width: 24px;
+            height: 11px;
+            border: 1.5px solid #fff;
+            border-radius: 2px;
+            position: relative;
+            margin-left: 2px;
+        }
+
+        .battery::after {
+            content: '';
+            position: absolute;
+            right: -4px;
+            top: 2px;
+            width: 2px;
+            height: 5px;
+            background: #fff;
+            border-radius: 0 1px 1px 0;
+        }
+
+        .battery-fill {
+            position: absolute;
+            left: 1px;
+            top: 1px;
+            bottom: 1px;
+            width: 60%;
+            background: #f5c518;
+            border-radius: 1px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #4a6cf7, #6b7dda);
+            padding: 12px 20px 18px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .header-pill {
+            background: rgba(255, 255, 255, 0.25);
+            color: #fff;
+            padding: 8px 32px;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        /* Card content */
+        .card-content {
+            padding: 0 28px 20px;
+            background: #fff;
+        }
+
+        /* Photo section */
+        .photo-section {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            padding-top: 20px;
+            padding-bottom: 10px;
+        }
+
+        .photo-wrapper {
+            position: relative;
+            width: 220px;
+            height: 220px;
+        }
+
+        .profile-photo {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e8e8e8;
+            background: #ddd;
+            display: block;
+        }
+
+        .photo-placeholder {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            border: 3px solid #e8e8e8;
+            background: #e9ecef;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            color: #888;
+        }
+
+        .photo-placeholder:hover {
+            background: #dde1e6;
+        }
+
+        .photo-placeholder svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 8px;
+            fill: #aaa;
+        }
+
+        .photo-placeholder span {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* Frank logo */
+        .frank-logo {
+            position: absolute;
+            bottom: 10px;
+            right: -5px;
+            width: 80px;
+            height: 80px;
+            z-index: 2;
+        }
+
+        .frank-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #e91e85;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        .frank-circle span {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(233, 30, 133, 0.4),
+                            0 0 25px rgba(233, 30, 133, 0.3),
+                            0 0 40px rgba(233, 30, 133, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(233, 30, 133, 0.6),
+                            0 0 45px rgba(233, 30, 133, 0.5),
+                            0 0 70px rgba(233, 30, 133, 0.3),
+                            0 0 100px rgba(233, 30, 133, 0.15);
+            }
+        }
+
+        /* Name & date */
+        .student-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-top: 10px;
+            min-height: 36px;
+        }
+
+        .student-dob {
+            font-size: 17px;
+            color: #1a1a1a;
+            margin-top: 6px;
+            font-weight: 400;
+            min-height: 22px;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 16px 0;
+        }
+
+        /* University section */
+        .university-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .university-info {
+            flex: 1;
+        }
+
+        .uni-name {
+            font-size: 16px;
+            font-weight: 400;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+
+        .uni-faculty {
+            font-size: 16px;
+            font-weight: 400;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+
+        .uni-type {
+            font-size: 16px;
+            font-weight: 400;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+
+        .student-number {
+            font-size: 16px;
+            font-weight: 400;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+
+        .syl-logo {
+            width: 65px;
+            height: 75px;
+            flex-shrink: 0;
+            margin-left: 10px;
+            margin-top: 5px;
+        }
+
+        /* Valid section */
+        .valid-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .valid-check {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #3ecf8e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .valid-check svg {
+            width: 16px;
+            height: 16px;
+            fill: #fff;
+        }
+
+        .valid-text {
+            font-size: 16px;
+            font-weight: 400;
+            color: #1a1a1a;
+        }
+
+        .valid-until {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-top: 6px;
+        }
+
+        /* Verification button */
+        .verify-btn {
+            margin-top: 20px;
+            width: 100%;
+            padding: 16px;
+            background: #7b8ec8;
+            color: #fff;
+            border: none;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px;
+            background: #fff;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 20px;
+            z-index: 10;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            font-size: 11px;
+            color: #888;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .nav-item.active {
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        .nav-item svg {
+            width: 26px;
+            height: 26px;
+        }
+
+        .nav-badge {
+            position: absolute;
+            top: -2px;
+            right: -6px;
+            width: 16px;
+            height: 16px;
+            background: #e91e85;
+            color: #fff;
+            border-radius: 50%;
+            font-size: 10px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-icon-wrapper {
+            position: relative;
+        }
+
+        /* Edit panel */
+        .edit-panel {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 100;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-end;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .edit-panel.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .edit-sheet {
+            background: #fff;
+            width: 100%;
+            border-radius: 20px 20px 0 0;
+            padding: 24px 28px 40px;
+            transform: translateY(100%);
+            transition: transform 0.35s ease-out;
+        }
+
+        .edit-panel.active .edit-sheet {
+            transform: translateY(0);
+        }
+
+        .edit-sheet h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #1a1a1a;
+        }
+
+        .edit-sheet .form-group {
+            margin-bottom: 16px;
+        }
+
+        .edit-sheet label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .edit-sheet input[type="text"],
+        .edit-sheet input[type="date"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .edit-sheet input:focus {
+            border-color: #4a6cf7;
+        }
+
+        .photo-upload-btn {
+            width: 100%;
+            padding: 12px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            background: #f9f9f9;
+            font-size: 15px;
+            color: #666;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .photo-upload-btn:hover {
+            border-color: #4a6cf7;
+            background: #f0f3ff;
+            color: #4a6cf7;
+        }
+
+        .apply-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #4a6cf7, #6b7dda);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .close-edit-btn {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            color: #888;
+            border: none;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        /* Spacer for bottom nav */
+        .bottom-spacer {
+            height: 90px;
+        }
+
+        /* Edit fab */
+        .edit-fab {
+            position: fixed;
+            bottom: 90px;
+            right: calc(50% - 190px);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4a6cf7, #6b7dda);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(74, 108, 247, 0.4);
+        }
+
+        .edit-fab svg {
+            width: 22px;
+            height: 22px;
+            fill: #fff;
+        }
+
+        @media (max-width: 420px) {
+            .edit-fab {
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="phone-frame">
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-bar-left" id="clock">13.16</div>
+        <div class="status-bar-right">
+            <div class="signal-bars">
+                <div class="signal-bar"></div>
+                <div class="signal-bar"></div>
+                <div class="signal-bar"></div>
+                <div class="signal-bar"></div>
+            </div>
+            <span>4G</span>
+            <div class="battery">
+                <div class="battery-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-pill">Student Card</div>
+    </div>
+
+    <!-- Card Content -->
+    <div class="card-content">
+        <!-- Photo -->
+        <div class="photo-section">
+            <div class="photo-wrapper">
+                <div class="photo-placeholder" id="photoPlaceholder" onclick="document.getElementById('photoInput').click()">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <span>Valitse kuva</span>
+                </div>
+                <img class="profile-photo" id="profilePhoto" style="display:none;" alt="Profile">
+                <div class="frank-logo">
+                    <div class="frank-circle">
+                        <span>frank</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Name -->
+        <div class="student-name" id="displayName">Etunimi Sukunimi</div>
+
+        <!-- Date of birth -->
+        <div class="student-dob" id="displayDob">pp-kk-vvvv</div>
+
+        <div class="divider"></div>
+
+        <!-- University info -->
+        <div class="university-section">
+            <div class="university-info">
+                <div class="uni-name">Aalto-yliopisto</div>
+                <div class="uni-faculty">AALTO ENG</div>
+                <div class="uni-type">Degree student</div>
+                <div class="student-number" id="studentNumber">100000000</div>
+            </div>
+            <!-- SYL Logo -->
+            <svg class="syl-logo" viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg">
+                <g fill="#1a4b8e">
+                    <!-- Pillar left -->
+                    <rect x="45" y="60" width="18" height="120" rx="2"/>
+                    <!-- Pillar center-left -->
+                    <rect x="75" y="60" width="18" height="120" rx="2"/>
+                    <!-- Pillar center-right -->
+                    <rect x="108" y="60" width="18" height="120" rx="2"/>
+                    <!-- Pillar right -->
+                    <rect x="138" y="60" width="18" height="120" rx="2"/>
+                    <!-- Top bar -->
+                    <rect x="30" y="45" width="140" height="18" rx="3"/>
+                    <!-- Roof/triangle hat -->
+                    <polygon points="100,8 150,45 50,45"/>
+                    <!-- Base -->
+                    <rect x="30" y="178" width="140" height="12" rx="2"/>
+                    <!-- Cross bar middle -->
+                    <rect x="40" y="115" width="122" height="12" rx="2"/>
+                </g>
+                <!-- SYL text -->
+                <text x="100" y="220" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="42" font-weight="700" fill="#1a4b8e">SYL</text>
+            </svg>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Valid -->
+        <div class="valid-section">
+            <div class="valid-check">
+                <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+            </div>
+            <span class="valid-text">Valid</span>
+        </div>
+
+        <div class="valid-until">Valid until 30.09.2027</div>
+
+        <!-- Verification button -->
+        <button class="verify-btn">Student Card Verification</button>
+
+        <div class="bottom-spacer"></div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a class="nav-item" href="#">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+            <span>Discounts</span>
+        </a>
+        <a class="nav-item active" href="#">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="6" y="4" width="12" height="16" rx="2"/><circle cx="12" cy="10" r="2.5"/><path d="M8 18h8"/></svg>
+            <span>Student Card</span>
+        </a>
+        <a class="nav-item" href="#">
+            <div class="nav-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <div class="nav-badge">1</div>
+            </div>
+            <span>Messages</span>
+        </a>
+        <a class="nav-item" href="#">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+            <span>Menu</span>
+        </a>
+    </div>
+</div>
+
+<!-- Edit FAB Button -->
+<button class="edit-fab" id="editFab" onclick="openEdit()">
+    <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+</button>
+
+<!-- Edit Panel -->
+<div class="edit-panel" id="editPanel">
+    <div class="edit-sheet">
+        <h3>Muokkaa korttia</h3>
+
+        <div class="form-group">
+            <label>Kuva</label>
+            <div class="photo-upload-btn" onclick="document.getElementById('photoInput').click()">
+                📷 Valitse kuva laitteelta
+            </div>
+            <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(this)">
+        </div>
+
+        <div class="form-group">
+            <label>Nimi</label>
+            <input type="text" id="inputName" placeholder="Etunimi Sukunimi" oninput="updateCard()">
+        </div>
+
+        <div class="form-group">
+            <label>Syntymäaika</label>
+            <input type="date" id="inputDob" onchange="updateCard()">
+        </div>
+
+        <button class="apply-btn" onclick="closeEdit()">Valmis</button>
+        <button class="close-edit-btn" onclick="closeEdit()">Sulje</button>
+    </div>
+</div>
+
+<script>
+    // Generate random student number (9 digits starting with 100)
+    function generateStudentNumber() {
+        return '100' + Math.floor(100000 + Math.random() * 900000);
+    }
+
+    // Set student number on load
+    document.getElementById('studentNumber').textContent = generateStudentNumber();
+
+    // Update clock
+    function updateClock() {
+        const now = new Date();
+        const h = now.getHours();
+        const m = now.getMinutes().toString().padStart(2, '0');
+        document.getElementById('clock').textContent = h + '.' + m;
+    }
+    updateClock();
+    setInterval(updateClock, 10000);
+
+    // Handle photo upload
+    function handlePhoto(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('profilePhoto');
+                img.src = e.target.result;
+                img.style.display = 'block';
+                document.getElementById('photoPlaceholder').style.display = 'none';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Update card in real time
+    function updateCard() {
+        const name = document.getElementById('inputName').value;
+        const dob = document.getElementById('inputDob').value;
+
+        if (name) {
+            document.getElementById('displayName').textContent = name;
+        } else {
+            document.getElementById('displayName').textContent = 'Etunimi Sukunimi';
+        }
+
+        if (dob) {
+            const parts = dob.split('-'); // yyyy-mm-dd
+            document.getElementById('displayDob').textContent =
+                parts[2] + '-' + parts[1] + '-' + parts[0];
+        } else {
+            document.getElementById('displayDob').textContent = 'pp-kk-vvvv';
+        }
+    }
+
+    // Edit panel
+    function openEdit() {
+        document.getElementById('editPanel').classList.add('active');
+    }
+
+    function closeEdit() {
+        document.getElementById('editPanel').classList.remove('active');
+    }
+
+    // Close panel when clicking overlay
+    document.getElementById('editPanel').addEventListener('click', function(e) {
+        if (e.target === this) closeEdit();
+    });
+</script>
+
+</body>
+</html>
