@@ -1,0 +1,11 @@
+{
+  "name": "Student Card",
+  "short_name": "Student Card",
+  "description": "Frank opiskelijan kortti",
+  "display": "standalone",
+  "orientation": "portrait",
+  "start_url": "/student-card/",
+  "scope": "/student-card/",
+  "background_color": "#ffffff",
+  "theme_color": "#4a6cf7"
+}

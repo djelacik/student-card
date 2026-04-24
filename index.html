@@ -2,8 +2,25 @@
 <html lang="fi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Student Card</title>
+
+    <!-- PWA / Standalone (hides browser chrome when added to home screen) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Student Card">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#4a6cf7">
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Open Graph (link preview) -->
+    <meta property="og:title" content="🎓 Opiskelijan Student Card">
+    <meta property="og:description" content="From Daniel to people 🔥 100% aito opiskelija (luota mulle bro). Täysin legit, no cap fr fr on God 😤">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://djelacik.github.io/student-card/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="🎓 Opiskelijan Student Card">
+    <meta name="twitter:description" content="From Daniel to people 🔥 100% aito opiskelija (luota mulle bro). Täysin legit, no cap fr fr on God 😤">
     <style>
         * {
             margin: 0;
@@ -544,16 +561,67 @@
             box-shadow: 0 4px 15px rgba(74, 108, 247, 0.4);
         }
 
-        .edit-fab svg {
-            width: 22px;
-            height: 22px;
-            fill: #fff;
+        /* QR Modal */
+        .qr-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            z-index: 200;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
         }
 
-        @media (max-width: 420px) {
-            .edit-fab {
-                right: 20px;
-            }
+        .qr-modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .qr-sheet {
+            background: #fff;
+            width: 100%;
+            max-width: 420px;
+            border-radius: 20px 20px 0 0;
+            padding: 28px 28px 48px;
+            text-align: center;
+            transform: translateY(100%);
+            transition: transform 0.35s ease-out;
+        }
+
+        .qr-modal-overlay.active .qr-sheet {
+            transform: translateY(0);
+        }
+
+        .qr-sheet h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #1a1a1a;
+        }
+
+        .qr-sheet p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .qr-sheet canvas {
+            border-radius: 12px;
+            max-width: 220px;
+        }
+
+        .qr-close-btn {
+            margin-top: 20px;
+            width: 100%;
+            padding: 13px;
+            background: transparent;
+            color: #888;
+            border: none;
+            font-size: 15px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -587,7 +655,7 @@
         <!-- Photo -->
         <div class="photo-section">
             <div class="photo-wrapper">
-                <div class="photo-placeholder" id="photoPlaceholder" onclick="document.getElementById('photoInput').click()">
+                <div class="photo-placeholder" id="photoPlaceholder" onclick="openEdit()">
                     <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                     <span>Valitse kuva</span>
                 </div>
@@ -654,7 +722,7 @@
         <div class="valid-until">Valid until 30.09.2027</div>
 
         <!-- Verification button -->
-        <button class="verify-btn">Student Card Verification</button>
+        <button class="verify-btn" onclick="verifyCard()">Student Card Verification</button>
 
         <div class="bottom-spacer"></div>
     </div>
@@ -683,10 +751,15 @@
     </div>
 </div>
 
-<!-- Edit FAB Button -->
-<button class="edit-fab" id="editFab" onclick="openEdit()">
-    <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-</button>
+<!-- QR Modal -->
+<div class="qr-modal-overlay" id="qrModal" onclick="closeQr(event)">
+    <div class="qr-sheet">
+        <h3>🎓 Verify Student</h3>
+        <p>Kanye West — Wolves 🐺</p>
+        <canvas id="qrCanvas"></canvas>
+        <button class="qr-close-btn" onclick="closeQrModal()">Sulje</button>
+    </div>
+</div>
 
 <!-- Edit Panel -->
 <div class="edit-panel" id="editPanel">
@@ -782,7 +855,30 @@
     document.getElementById('editPanel').addEventListener('click', function(e) {
         if (e.target === this) closeEdit();
     });
+
+    // QR code verify
+    var qrGenerated = false;
+    function verifyCard() {
+        document.getElementById('qrModal').classList.add('active');
+        if (!qrGenerated) {
+            QRCode.toCanvas(
+                document.getElementById('qrCanvas'),
+                'https://open.spotify.com/search/kanye%20west%20wolves',
+                { width: 220, margin: 2, color: { dark: '#1a1a1a', light: '#ffffff' } },
+                function() { qrGenerated = true; }
+            );
+        }
+    }
+
+    function closeQrModal() {
+        document.getElementById('qrModal').classList.remove('active');
+    }
+
+    function closeQr(e) {
+        if (e.target === document.getElementById('qrModal')) closeQrModal();
+    }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
 </body>
 </html>
